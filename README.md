@@ -24,24 +24,26 @@
 ## Deployment Steps
 
 ### Step 1: Add HANA Database Configuration
-```bash
+```
 cds add hana --production
 This configures your project to connect with the HANA database in production mode.
+```
 
-Step 2: Add XSUAA Security Configuration
-bash
-Copy code
+### Step 2: Add XSUAA Security Configuration
+```
 cds add xsuaa
+```
 This creates the xs-security.json file with default scopes, attributes, and role templates.
 
 Update the xs-security.json file with the following configuration:
+```
 
-json
-Copy code
-{
   "xsappname": "YOUR_APP_NAME",
   "tenant-mode": "dedicated",
-  "authorities": [
+```
+and
+```
+"authorities": [
     "$ACCEPT_GRANTED_AUTHORITIES"
   ],
   "oauth2-configuration": {
@@ -51,49 +53,56 @@ Copy code
     ]
   },
   "xsenableasyncservice": "true"
-}
+```
 Replace YOUR_APP_NAME with the actual name of your application.
 
-Step 3: Add MTA Configuration
-bash
-Copy code
+### Step 3: Add MTA Configuration
+```
 cds add mta
+```
 This will create the mta.yaml file required for deployment.
 
-Step 4: Build and Deploy the Project
+### Step 4: Build and Deploy the Project
 Login to Cloud Foundry
-
-bash
-Copy code
+```
 cf login
+```
 Build MTA Project
 
 Right-click the mta.yaml file and select Build MTA Project, OR
-
-bash
-Copy code
+```
 mbt build -p cf
+```
 Wait for the mta_archives folder to be created. Once the .mtar file is available:
 
 Deploy the MTA
-
-bash
-Copy code
+```
 cf deploy mta_archives/*.mtar
+```
 Check Logs on Deployment Errors
-
-bash
-Copy code
+```
 cf logs SERVICE_NAME --recent
+```
 Replace SERVICE_NAME with the actual service name to check logs.
 
-Notes & Tips
-Ensure that your db and srv layers are working locally before deploying.
+**Notes & Tips**
+- Ensure that your db and srv layers are working locally before deploying.
 
-Always verify that the scopes and role templates in xs-security.json match your service access requirements.
+- Always verify that the scopes and role templates in xs-security.json match your service access requirements.
 
-If deployment fails, check the logs using cf logs <SERVICE_NAME> --recent to identify the error.
+- If deployment fails, check the logs using cf logs <SERVICE_NAME> --recent to identify the error.
 
-Use mbt clean before rebuilding if you encounter build issues.
+- Use mbt clean before rebuilding if you encounter build issues.
 
-For multi-environment deployment, consider creating separate XSUAA instances and HANA configurations.
+### After Successful Deployment.
+1. You will find two instances created under the instances section in your BTP account.
+    ->  *-auth
+    ->  *-db
+2. Before you access the srv URL you must assign the roles to the user.
+3. Go to role collection in your BTP platform. In here you will find the role collections that are generated automatically based on your "xs-security.json" file.
+4. Assign that role to the user under the user section of you BTP account.
+5. Open your spaces in BTP where you can find the URL of the srv.
+6. Opening it will display your inital page (contains services, metadata...).
+7. If the intial page is not shown, please refer the possible erros section.
+
+
