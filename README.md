@@ -15,7 +15,7 @@
 1. Create a CAPM project with the following structure:
    - `db` (schema)
    - `srv` (service)
-   - Add sample data and verify that it is exposing correctly when run locally.  
+2. Add sample data and verify that it is exposing correctly when run locally.  
 
 **Note:** Writing the required access roles in your `srv` file automatically adds them to `xs-security.json`.  
 
@@ -26,17 +26,21 @@
 ### Step 1: Add HANA Database Configuration
 ```bash
 cds add hana --production
+This configures your project to connect with the HANA database in production mode.
+
 Step 2: Add XSUAA Security Configuration
+bash
+Copy code
 cds add xsuaa
-
-
 This creates the xs-security.json file with default scopes, attributes, and role templates.
 
-Update the xs-security.json file with the following configurations:
-```{
+Update the xs-security.json file with the following configuration:
+
+json
+Copy code
+{
   "xsappname": "YOUR_APP_NAME",
-  "tenant-mode": "dedicated",```
-```
+  "tenant-mode": "dedicated",
   "authorities": [
     "$ACCEPT_GRANTED_AUTHORITIES"
   ],
@@ -47,46 +51,43 @@ Update the xs-security.json file with the following configurations:
     ]
   },
   "xsenableasyncservice": "true"
-```
-
+}
 Replace YOUR_APP_NAME with the actual name of your application.
 
 Step 3: Add MTA Configuration
+bash
+Copy code
 cds add mta
-
-
 This will create the mta.yaml file required for deployment.
 
 Step 4: Build and Deploy the Project
-
 Login to Cloud Foundry
 
+bash
+Copy code
 cf login
-
-
 Build MTA Project
 
 Right-click the mta.yaml file and select Build MTA Project, OR
 
+bash
+Copy code
 mbt build -p cf
-
-
 Wait for the mta_archives folder to be created. Once the .mtar file is available:
 
 Deploy the MTA
 
+bash
+Copy code
 cf deploy mta_archives/*.mtar
-
-
 Check Logs on Deployment Errors
 
+bash
+Copy code
 cf logs SERVICE_NAME --recent
-
-
 Replace SERVICE_NAME with the actual service name to check logs.
 
 Notes & Tips
-
 Ensure that your db and srv layers are working locally before deploying.
 
 Always verify that the scopes and role templates in xs-security.json match your service access requirements.
